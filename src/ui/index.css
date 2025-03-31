@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Inconsolata:wght@200..900&display=swap');
+@import 'tailwindcss';
+
+/* @theme {
+    --color-primary: #1F2937;
+    --color-secondary: #374151;
+
+} */
+
+@layer utilities {
+    .bg-logo {
+      background-image: url('/background.svg');
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .text-primary {
+        color: #1F2937;
+    }
+    .text-secondary {
+        color: #374151;
+    }
+}
+
+body {
+    font-family: 'Inconsolata', Helvetica, sans-serif;
+}
