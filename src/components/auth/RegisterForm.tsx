@@ -5,11 +5,11 @@ import ErrorMessage from "../ui/ErrorMessage";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react"; 
+import { useState } from "react";
 
 export default function RegisterForm() {
 	const navigate = useNavigate();
-	const [isLoading, setIsLoading] = useState(false); 
+	const [isLoading, setIsLoading] = useState(false);
 	const initialValues = {
 		name: "",
 		email: "",
@@ -28,15 +28,17 @@ export default function RegisterForm() {
 	const password = watch("password");
 
 	const handleRegister = async (formData: RegisterFormType) => {
-		setIsLoading(true); 
+		setIsLoading(true);
 		try {
 			const { data } = await api.post("/auth/register", formData);
 			toast.success(data);
 			reset();
-			navigate("/files");
+			navigate("/auth/login");
 		} catch (err) {
 			if (isAxiosError(err) && err.response) {
 				toast.error(err.response.data.error);
+			} else {
+				toast.error("Intentalo de nuevo más tarde");
 			}
 		} finally {
 			setIsLoading(false);
@@ -48,7 +50,29 @@ export default function RegisterForm() {
 			<div className="mb-6">
 				<input
 					type="text"
-					className={`w-full border-b py-3 outline-none text-sm ${
+					className={`w-full border-b py-3 outline-none ${
+						errors.email
+							? "border-red-500 focus:border-red-500 "
+							: "border-gray-300 focus:border-gray-700"
+					}`}
+					placeholder="E-mail"
+					{...register("email", {
+						required: "Campo obligatorio",
+						pattern: {
+							value: /^\S+@\S+$/i,
+							message: "Email no válido",
+						},
+					})}
+				/>
+				{errors.email && (
+					<ErrorMessage>{errors.email.message}</ErrorMessage>
+				)}
+			</div>
+
+			<div className="mb-6">
+				<input
+					type="text"
+					className={`w-full border-b py-3 outline-none  ${
 						errors.name
 							? "border-red-500 focus:border-red-500"
 							: "border-gray-300 focus:border-gray-700"
@@ -65,30 +89,8 @@ export default function RegisterForm() {
 
 			<div className="mb-6">
 				<input
-					type="email"
-					className={`w-full border-b py-3 outline-none text-sm ${
-						errors.email
-							? "border-red-500 focus:border-red-500 "
-							: "border-gray-300 focus:border-gray-700"
-					}`}
-					placeholder="Email"
-					{...register("email", {
-						required: "Campo obligatorio",
-						pattern: {
-							value: /^\S+@\S+$/i,
-							message: "Email no válido",
-						},
-					})}
-				/>
-				{errors.email && (
-					<ErrorMessage>{errors.email.message}</ErrorMessage>
-				)}
-			</div>
-
-			<div className="mb-6">
-				<input
 					type="password"
-					className={`w-full border-b py-3 outline-none text-sm ${
+					className={`w-full border-b py-3 outline-none ${
 						errors.password
 							? "border-red-500 focus:border-red-500 "
 							: "border-gray-300 focus:border-gray-700"
@@ -111,7 +113,7 @@ export default function RegisterForm() {
 			<div className="mb-8">
 				<input
 					type="password"
-					className={`w-full border-b py-3 outline-none text-sm ${
+					className={`w-full border-b py-3 outline-none ${
 						errors.password_confirmation
 							? "border-red-500 focus:border-red-500 "
 							: "border-gray-300 focus:border-gray-700"
@@ -133,8 +135,8 @@ export default function RegisterForm() {
 
 			<button
 				type="submit"
-				className="w-full bg-[#5B86E5] text-white py-2 rounded-md hover:bg-[#5d5be5] transition-colors cursor-pointer flex justify-center items-center"
-				disabled={isLoading} 
+				className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors cursor-pointer flex justify-center items-center"
+				disabled={isLoading}
 			>
 				{isLoading ? (
 					<svg

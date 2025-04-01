@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AuthLayout from "./layout/AuthLayout";
 import MainPage from "./pages/MainPage";
+// import AppLayout from "./layout/AppLayout";
 
 export default function Router() {
 	return (
@@ -14,7 +15,9 @@ export default function Router() {
 					<Route path="/auth/register" element={<RegisterPage />} />
 				</Route>
 
-				<Route path="/files" element={<MainPage />} />
+				<Route path="/user" element={<MainPage />} >
+					{/* <Route index={true} element={< />} /> */}
+				</Route>
 			</Routes>
 		</HashRouter>
 	);

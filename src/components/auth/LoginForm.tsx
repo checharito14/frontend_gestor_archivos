@@ -22,7 +22,7 @@ export default function LoginForm() {
 		try {
 			const { data } = await api.post("/auth/login", formData);
 			toast.success(data);
-			navigate("/files");
+			navigate("/user");
 		} catch (err) {
 			if (isAxiosError(err) && err.response) {
 				toast.error(err.response.data.error);
@@ -36,13 +36,13 @@ export default function LoginForm() {
 		<form onSubmit={handleSubmit(handleLogin)} className="mt-10">
 			<div className="mb-6">
 				<input
-					type="email"
-					className={`w-full border-b py-3 outline-none text-sm ${
+					type="text"
+					className={`w-full border-b py-3 outline-none ${
 						errors.email
 							? "border-red-500 focus:border-red-500"
 							: "border-gray-300 focus:border-gray-700"
 					}`}
-					placeholder="Email"
+					placeholder="E-mail"
 					{...register("email", {
 						required: "Campo obligatorio",
 						pattern: {
@@ -59,12 +59,12 @@ export default function LoginForm() {
 			<div className="mb-8">
 				<input
 					type="password"
-					className={`w-full border-b py-3 outline-none text-sm ${
+					className={`w-full border-b py-3 outline-none  ${
 						errors.password
 							? "border-red-500 focus:border-red-500"
 							: "border-gray-300 focus:border-gray-700"
 					}`}
-					placeholder="Password"
+					placeholder="Contraseña"
 					{...register("password", {
 						required: "Campo obligatorio",
 					})}
@@ -76,7 +76,7 @@ export default function LoginForm() {
 
 			<button
 				type="submit"
-				className="w-full bg-[#374151] text-white py-2 rounded-md hover:bg-[#111520] transition-colors cursor-pointer flex justify-center items-center"
+				className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-500 transition-colors cursor-pointer flex justify-center items-center"
 				disabled={isLoading}
 			>
 				{isLoading ? (
