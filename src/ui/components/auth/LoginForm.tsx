@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { isAxiosError } from "axios";
-import { LoginFormType } from "../../types";
+import { LoginFormType } from "../../../types";
 import ErrorMessage from "../ui/ErrorMessage";
 import { toast } from "react-toastify";
-import api from "../../config/axios";
+import api from "../../../config/axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -21,7 +21,11 @@ export default function LoginForm() {
 		setIsLoading(true);
 		try {
 			const { data } = await api.post("/auth/login", formData);
-			toast.success(data);
+			console.log(data);
+			if(window.electron?.token?.save) {
+				await window.electron.token.save(data.token);
+			}
+			toast.success("Inicio de sesión exitoso");
 			navigate("/user");
 		} catch (err) {
 			if (isAxiosError(err) && err.response) {
@@ -76,7 +80,7 @@ export default function LoginForm() {
 
 			<button
 				type="submit"
-				className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-500 transition-colors cursor-pointer flex justify-center items-center"
+				className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors cursor-pointer flex justify-center items-center"
 				disabled={isLoading}
 			>
 				{isLoading ? (

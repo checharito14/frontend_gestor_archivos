@@ -1,8 +1,20 @@
 import { Clock, Folder, Plus, Trash2, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
-import SidebarLink from "../../components/SidebarLink";
+import SidebarLink from "../components/SidebarLink";
+import { useQuery } from "@tanstack/react-query";
+import { getUser } from "../../api/GestorArchivosAPI";
 
 export default function AppLayout() {
+
+	const { data, isError, error, isLoading} = useQuery({
+		queryFn: getUser,
+		queryKey: ["user"],
+		retry: 1,
+		refetchOnWindowFocus: false,
+	})
+
+	console.log(data, isError, error, isLoading);
+ 
 	return (
         <div className="relative min-h-screen">
               <div className="absolute inset-0 bg-gradient-to-b from-[#F8F9FA] to-[#EDEDED] opacity-80 -z-10"></div>
