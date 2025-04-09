@@ -21,10 +21,8 @@ export default function LoginForm() {
 		setIsLoading(true);
 		try {
 			const { data } = await api.post("/auth/login", formData);
-			console.log(data);
-			if(window.electron?.token?.save) {
-				await window.electron.token.save(data.token);
-			}
+			localStorage.setItem("token", data);
+
 			toast.success("Inicio de sesión exitoso");
 			navigate("/user");
 		} catch (err) {
