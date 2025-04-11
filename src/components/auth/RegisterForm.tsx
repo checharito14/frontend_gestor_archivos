@@ -135,7 +135,7 @@ export default function RegisterForm() {
 
 			<button
 				type="submit"
-				className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors cursor-pointer flex justify-center items-center"
+				className="w-full bg-indigo-600 text-white py-2 rounded-sm hover:bg-indigo-700 transition-colors cursor-pointer flex justify-center items-center"
 				disabled={isLoading}
 			>
 				{isLoading ? (
