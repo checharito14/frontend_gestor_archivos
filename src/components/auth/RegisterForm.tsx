@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { isAxiosError } from "axios";
-import { RegisterFormType } from "../../../types";
+import { RegisterFormType } from "../../types";
 import ErrorMessage from "../ui/ErrorMessage";
 import { toast } from "react-toastify";
-import api from "../../../config/axios";
+import api from "../../config/axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 

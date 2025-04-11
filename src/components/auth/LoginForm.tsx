@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { isAxiosError } from "axios";
-import { LoginFormType } from "../../../types";
+import { LoginFormType } from "../../types";
 import ErrorMessage from "../ui/ErrorMessage";
 import { toast } from "react-toastify";
-import api from "../../../config/axios";
+import api from "../../config/axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -24,7 +24,7 @@ export default function LoginForm() {
 			localStorage.setItem("token", data);
 
 			toast.success("Inicio de sesión exitoso");
-			navigate("/user");
+			navigate("/files");
 		} catch (err) {
 			if (isAxiosError(err) && err.response) {
 				toast.error(err.response.data.error);

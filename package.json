@@ -17,6 +17,7 @@
     "dist:linux": "npm run transpile:electron && npm run build && electron-builder --linux --x64"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.1",
     "@tailwindcss/vite": "^4.0.17",
     "@tanstack/react-query": "^5.71.5",
     "axios": "^1.8.4",
