@@ -1,59 +1,26 @@
-<<<<<<< HEAD
-# React + TypeScript + Vite
+# DocVault
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**DocVault** es una aplicación de gestión de archivos que permite a los usuarios almacenar, organizar y acceder a sus documentos de manera segura. La aplicación está construida con **React**, **Electron**, y un backend en **Node.js** con **Express** y **MongoDB**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Características
 
-## Expanding the ESLint configuration
+- **Autenticación segura**: Registro e inicio de sesión con validación de credenciales.
+- **Gestión de archivos**: Navegación por carpetas, archivos recientes y papelera.
+- **Interfaz moderna**: Diseño responsivo con **Tailwind CSS**.
+- **Almacenamiento seguro**: Uso de **keytar** para guardar tokens de sesión.
+- **Protección de rutas**: Acceso restringido a rutas protegidas.
+- **Búsqueda rápida**: Barra de búsqueda para encontrar archivos y carpetas.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## 🛠️ Tecnologías utilizadas
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
-=======
-# frontend_gestor_archivos
-Frontend de gestor de archivos digital con React, ts, vite y electron
->>>>>>> a46a8e423402ca9c8d693f1639e38a5cc956d150
+### **Frontend**
+- **React**: Biblioteca para construir interfaces de usuario.
+- **React Router DOM**: Manejo de rutas en la aplicación.
+- **React Query**: Manejo de datos asíncronos.
+- **Tailwind CSS**: Framework de estilos CSS.
+- **Axios**: Cliente HTTP para consumir el backend.
+- **Electron**: Para empaquetar la aplicación como una app de escritorio.
