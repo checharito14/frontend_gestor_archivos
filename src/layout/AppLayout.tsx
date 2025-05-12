@@ -1,5 +1,5 @@
 import { Clock, Folder, Plus, Trash2 } from "lucide-react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Link, Navigate, Outlet } from "react-router-dom";
 import SidebarLink from "../components/SidebarLink";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "../api/GestorArchivosAPI";
@@ -20,7 +20,9 @@ export default function AppLayout() {
 			<div className="grid grid-cols-[0.5fr_2fr] min-h-screen">
 				<div className="bg-slate-900 rounded-3xl m-2">
 					<div className="w-32 h-32 mx-auto">
-						<img src="/logo.svg" alt="Logo" />
+						<Link to={"/files/"}>
+							<img src="/logo.svg" alt="Logo" />
+						</Link>
 					</div>
 
 					<nav className="flex flex-col gap-3 text-sm">
@@ -30,12 +32,12 @@ export default function AppLayout() {
 							label={"Mis archivos"}
 						/>
 						<SidebarLink
-							to={"/recent"}
+							to={"/files/recent"}
 							icon={Clock}
 							label={"Recientes"}
 						/>
 						<SidebarLink
-							to={"/shared"}
+							to={"/files/trash"}
 							icon={Trash2}
 							label={"Papelera"}
 						/>
@@ -51,7 +53,7 @@ export default function AppLayout() {
 				</div>
 
 				<div>
-					<NavBar data={data}/>
+					<NavBar />
 					<Outlet />
 				</div>
 			</div>

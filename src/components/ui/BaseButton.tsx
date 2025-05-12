@@ -10,7 +10,7 @@ export default function BaseButton({label, onClick,	variant = "primary",}: BaseB
 	const variantStyles = {
 		primary: "bg-indigo-500 hover:bg-indigo-700",
 		secondary: "bg-yellow-500 hover:bg-yellow-700",
-		danger: "bg-red-500 hover:bg-red-700",
+		danger: "bg-red-600 hover:bg-red-700",
 	};
 
 	return (
