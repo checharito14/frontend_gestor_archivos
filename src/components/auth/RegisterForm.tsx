@@ -1,11 +1,10 @@
 import { useForm } from "react-hook-form";
-import { isAxiosError } from "axios";
 import { RegisterFormType } from "../../types";
 import ErrorMessage from "../ui/ErrorMessage";
 import { toast } from "react-toastify";
-import api from "../../config/axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { createAccount } from "../../services/authService";
 
 export default function RegisterForm() {
 	const navigate = useNavigate();
@@ -30,16 +29,12 @@ export default function RegisterForm() {
 	const handleRegister = async (formData: RegisterFormType) => {
 		setIsLoading(true);
 		try {
-			const { data } = await api.post("/auth/register", formData);
-			toast.success(data);
+			await createAccount(formData.email, formData.password);
+			toast.success("Registro exitoso");
 			reset();
 			navigate("/auth/login");
-		} catch (err) {
-			if (isAxiosError(err) && err.response) {
-				toast.error(err.response.data.error);
-			} else {
-				toast.error("Intentalo de nuevo más tarde");
-			}
+		} catch (error) {
+			 toast.error((error as Error).message);
 		} finally {
 			setIsLoading(false);
 		}

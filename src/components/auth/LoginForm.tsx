@@ -1,11 +1,10 @@
 import { useForm } from "react-hook-form";
-import { isAxiosError } from "axios";
 import { LoginFormType } from "../../types";
 import ErrorMessage from "../ui/ErrorMessage";
 import { toast } from "react-toastify";
-import api from "../../config/axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { login } from "../../services/authService";
 
 export default function LoginForm() {
 	const navigate = useNavigate();
@@ -20,14 +19,12 @@ export default function LoginForm() {
 	const handleLogin = async (formData: LoginFormType) => {
 		setIsLoading(true);
 		try {
-			const { data } = await api.post("/auth/login", formData);
-			localStorage.setItem("token", data);
-
+			await login(formData.email, formData.password);
 			toast.success("Inicio de sesión exitoso");
 			navigate("/files");
-		} catch (err) {
-			if (isAxiosError(err) && err.response) {
-				toast.error(err.response.data.error);
+		} catch (error) {
+			if(error instanceof Error) {
+				toast.error(error.message);
 			}
 		} finally {
 			setIsLoading(false);

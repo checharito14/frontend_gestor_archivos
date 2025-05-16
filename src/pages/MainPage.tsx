@@ -1,26 +1,26 @@
-import { Plus } from "lucide-react";
+// FileList.tsx
+import { FileIcon, FolderIcon, Plus } from "lucide-react"; // Puedes usar lucide-react o Heroicons
 
 export default function MainPage() {
-	const documents = [
+	const files = [
 		{
-			id: 1,
-			name: "documento1.txt",
-			createdAt: "2023-10-01",
-			size: "2 MB",
+			id: "1",
+			name: "Mis Box Notes",
+			updatedAt: "29 mar 2025",
+			updatedBy: "Cesar Rice",
+			size: "0 archivos",
+			isFolder: true,
 		},
 		{
-			id: 2,
-			name: "documento2.txt",
-			createdAt: "2023-10-02",
-			size: "3 MB",
-		},
-		{
-			id: 3,
-			name: "documento3.txt",
-			createdAt: "2023-10-03",
-			size: "4 MB",
+			id: "1",
+			name: "Mis Box Notes",
+			updatedAt: "29 mar 2025",
+			updatedBy: "Cesar Rice",
+			size: "0 archivos",
+			isFolder: true,
 		},
 	];
+
 
 	return (
 		<div className="p-3 flex flex-col max-w-[90%] mx-auto">
@@ -31,35 +31,33 @@ export default function MainPage() {
 					<Plus className="size-5" />
 				</button>
 			</div>
-
-			<div className="grid grid-cols-3 gap-2 mt-5 p-3 bg-slate-100 rounded-lg">
-				<p>Nombre</p>
-				<p>Fecha de creación</p>
-				<p>Tamaño</p>
+			{/* Encabezado */}
+			<div className="grid grid-cols-3 gap-4 p-2 text-xs font-semibold text-gray-500 border-b">
+				<span>Nombre</span>
+				<span>Última actualización</span>
+				<span>Tamaño</span>
 			</div>
 
-			<div className="mt-5 overflow-x-auto">
-				<table className="table-auto w-full">
-					<thead className="bg-slate-100">
-						<tr>
-							<th className=" px-4 py-2 text-left">Nombre</th>
-							<th className=" px-4 py-2 text-left">
-								Fecha de creación
-							</th>
-							<th className="  px-4 py-2 text-left">Tamaño</th>
-						</tr>
-					</thead>
-					<tbody>
-						{documents.map((doc) => (
-							<tr key={doc.id} className="border-b border-slate-200">
-								<td className="  px-4 py-3">{doc.name}</td>
-								<td className=" px-4 py-2">{doc.createdAt}</td>
-								<td className="  px-4 py-2">{doc.size}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
+			{/* Lista */}
+			{files.map((file) => (
+				<div
+					key={file.id}
+					className="grid grid-cols-3 mb-1 gap-4 px-2 py-3 items-center border-b border-slate-200 hover:rounded-md hover:shadow-md transition-transform duration-200 cursor-pointer bg-white"
+				>
+					<div className="flex items-center gap-2">
+						{file.isFolder ? (
+							<FolderIcon className="w-5 h-5 text-yellow-500" />
+						) : (
+							<FileIcon className="w-5 h-5 text-blue-500" />
+						)}
+						<span>{file.name}</span>
+					</div>
+					<span className="text-sm text-gray-600">
+						{file.updatedAt}
+					</span>
+					<span className="text-sm text-gray-600">{file.size}</span>
+				</div>
+			))}
 		</div>
 	);
 }
