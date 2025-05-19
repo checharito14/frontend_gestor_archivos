@@ -5,9 +5,4 @@ contextBridge.exposeInMainWorld("electron", {
   receive: (channel: string, callback: (data: any) => void) => {
     ipcRenderer.on(channel, (_, data) => callback(data));
   },
-  token: {
-    save: (token: string) => ipcRenderer.send("save-token", token),
-    load: () => ipcRenderer.invoke("load-token"),
-    clear: () => ipcRenderer.send("clear-token"),
-  }
 });

@@ -1,5 +1,6 @@
 // FileList.tsx
-import { FileIcon, FolderIcon, Plus } from "lucide-react"; // Puedes usar lucide-react o Heroicons
+import BaseModal from "@/components/BaseModal";
+import { FileIcon, FolderIcon } from "lucide-react"; // Puedes usar lucide-react o Heroicons
 
 export default function MainPage() {
 	const files = [
@@ -17,19 +18,15 @@ export default function MainPage() {
 			updatedAt: "29 mar 2025",
 			updatedBy: "Cesar Rice",
 			size: "0 archivos",
-			isFolder: true,
+			// isFolder: true,
 		},
 	];
-
 
 	return (
 		<div className="p-3 flex flex-col max-w-[90%] mx-auto">
 			<div className="flex items-center justify-between">
 				<h1 className="text-2xl">Todos los archivos</h1>
-				<button className="flex items-center gap-2 border-1 border-slate-200 p-2 rounded-lg mt-5 cursor-pointer transition duration-100">
-					Agregar
-					<Plus className="size-5" />
-				</button>
+				{<BaseModal />}
 			</div>
 			{/* Encabezado */}
 			<div className="grid grid-cols-3 gap-4 p-2 text-xs font-semibold text-gray-500 border-b">
