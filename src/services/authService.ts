@@ -7,6 +7,7 @@ export const createAccount = async (email: string, password: string) => {
 	});
 
 	if (error) {
+		console.log(error.message);
 		throw new Error("Correo ya registrado o correo inválido");
       
 	}
@@ -24,3 +25,4 @@ export const login = async (email: string, password: string) => {
 
     return data
 };
+

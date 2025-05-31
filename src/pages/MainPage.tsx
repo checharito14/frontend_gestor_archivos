@@ -1,26 +1,58 @@
-// FileList.tsx
 import BaseModal from "@/components/BaseModal";
-import { FileIcon, FolderIcon } from "lucide-react"; // Puedes usar lucide-react o Heroicons
+import { formatBytes } from "@/components/dropzone";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/supabase/client";
+import { Download, Trash2, Copy } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function MainPage() {
-	const files = [
-		{
-			id: "1",
-			name: "Mis Box Notes",
-			updatedAt: "29 mar 2025",
-			updatedBy: "Cesar Rice",
-			size: "0 archivos",
-			isFolder: true,
-		},
-		{
-			id: "1",
-			name: "Mis Box Notes",
-			updatedAt: "29 mar 2025",
-			updatedBy: "Cesar Rice",
-			size: "0 archivos",
-			// isFolder: true,
-		},
-	];
+	const [files, setFiles] = useState<
+		import("@supabase/storage-js").FileObject[]
+	>([]);
+	const { session } = useAuth();
+
+	const userPath = `${session?.user.id}/`;
+
+	const fetchFiles = async () => {
+		const { data, error } = await supabase.storage
+			.from("files")
+			.list(userPath);
+
+		if (!error && data) {
+			setFiles(data);
+		}
+	};
+
+	useEffect(() => {
+		if (session) fetchFiles();
+	}, [session]);
+
+	const handleDelete = async (fileName: string) => {
+		const { error } = await supabase.storage.from("files").remove([userPath + fileName]);
+		if (!error) {
+			setFiles((prev) => prev.filter((f) => f.name !== fileName));
+		} else {
+			alert("Error al eliminar el archivo");
+		}
+	};
+
+	const handleDownload = (url: string, name: string) => {
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = name;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
+
+	const handleCopy = async (url: string) => {
+		try {
+			await navigator.clipboard.writeText(url);
+			alert("Enlace copiado al portapapeles");
+		} catch {
+			alert("No se pudo copiar el enlace");
+		}
+	};
 
 	return (
 		<div className="p-3 flex flex-col max-w-[90%] mx-auto">
@@ -29,32 +61,69 @@ export default function MainPage() {
 				{<BaseModal />}
 			</div>
 			{/* Encabezado */}
-			<div className="grid grid-cols-3 gap-4 p-2 text-xs font-semibold text-gray-500 border-b">
+			<div className="grid grid-cols-4 gap-4 p-2 text-xs font-semibold text-gray-500 border-b">
 				<span>Nombre</span>
 				<span>Última actualización</span>
 				<span>Tamaño</span>
+				<span>Acciones</span>
 			</div>
 
 			{/* Lista */}
-			{files.map((file) => (
-				<div
-					key={file.id}
-					className="grid grid-cols-3 mb-1 gap-4 px-2 py-3 items-center border-b border-slate-200 hover:rounded-md hover:shadow-md transition-transform duration-200 cursor-pointer bg-white"
-				>
-					<div className="flex items-center gap-2">
-						{file.isFolder ? (
-							<FolderIcon className="w-5 h-5 text-yellow-500" />
-						) : (
-							<FileIcon className="w-5 h-5 text-blue-500" />
-						)}
-						<span>{file.name}</span>
+			{files.map((file) => {
+				const { data: publicUrl } = supabase.storage
+					.from("files")
+					.getPublicUrl(userPath + file.name);
+
+				return (
+					<div
+						key={file.id || file.name}
+						className="grid grid-cols-4 mb-1 gap-4 px-2 py-3 items-center border-b border-slate-200 hover:rounded-md hover:shadow-md transition-transform duration-200 cursor-pointer bg-white"
+					>
+						<div className="flex items-center gap-2">
+							<img
+								src={publicUrl.publicUrl}
+								alt={file.name}
+								className="w-10 h-10 object-cover rounded"
+							/>
+							<span className="truncate max-w-[150px]">{file.name}</span>
+						</div>
+
+						<span className="text-sm text-gray-600">
+							{file.updated_at
+								? new Date(file.updated_at).toLocaleString()
+								: "-"}
+						</span>
+
+						<span className="text-sm text-gray-600">
+							{file.metadata?.size
+								? formatBytes(file.metadata.size)
+								: "-"}
+						</span>
+
+						{/* Acciones */}
+						<div className="flex gap-3">
+							<button
+								title="Descargar"
+								onClick={() => handleDownload(publicUrl.publicUrl, file.name)}
+							>
+								<Download className="w-5 h-5 text-blue-600 hover:text-blue-800" />
+							</button>
+							<button
+								title="Copiar enlace"
+								onClick={() => handleCopy(publicUrl.publicUrl)}
+							>
+								<Copy className="w-5 h-5 text-green-600 hover:text-green-800" />
+							</button>
+							<button
+								title="Eliminar"
+								onClick={() => handleDelete(file.name)}
+							>
+								<Trash2 className="w-5 h-5 text-red-600 hover:text-red-800" />
+							</button>
+						</div>
 					</div>
-					<span className="text-sm text-gray-600">
-						{file.updatedAt}
-					</span>
-					<span className="text-sm text-gray-600">{file.size}</span>
-				</div>
-			))}
+				);
+			})}
 		</div>
 	);
 }

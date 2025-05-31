@@ -1,35 +1,26 @@
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import BaseButton from "../components/ui/BaseButton";
-import ErrorMessage from "../components/ui/ErrorMessage";
-import { useQueryClient } from "@tanstack/react-query";
-import { User } from "../types";
+import { supabase } from "@/supabase/client";
 
 export default function ProfilePage() {
-	const queryClient = useQueryClient();
-	const user: User = queryClient.getQueryData(["user"])!;
+	const [user, setUser] = useState<any>(null);
 
-	console.log(user);
-
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm({
-		defaultValues: {
-			name: user.name,
-			email: user.email,
-		},
-	});
+	useEffect(() => {
+		const fetchUser = async () => {
+			const { data, error } = await supabase.auth.getUser();
+			if (!error && data?.user) {
+				setUser(data.user);
+			}
+		};
+		fetchUser();
+	}, []);
 
 	return (
 		<>
-			<form
-				className="p-6 flex flex-col max-w-[90%] mx-auto"
-				onSubmit={handleSubmit((data) => console.log(data))}
-			>
+			<div className="p-6 flex flex-col max-w-[90%] mx-auto">
 				<legend className="text-2xl text-slate-800">Mi perfil</legend>
-
-				{/* <div className="grid grid-cols-1 gap-2">
+{/* 
+				<div className="grid grid-cols-1 gap-2">
 					<label htmlFor="handle">Imagen:</label>
 					<input
 						id="image"
@@ -48,7 +39,6 @@ export default function ProfilePage() {
 						alt="User image"
 					/>
 					<div>
-						<p>{user.name}</p>
 						<div className="flex gap-2 mt-1">
 							<BaseButton label={"Cambiar"} />
 							<BaseButton label={"Quitar"} variant={"danger"} />
@@ -56,43 +46,24 @@ export default function ProfilePage() {
 					</div>
 				</div>
 
-				<div className="flex flex-col max-w-3xl text-lg gap-4">
-					<div className="border-b border-slate-600 p-1">
-						<label className="p-2 pr-5">Email:</label>
-						<input
-							disabled
-							className="border-none"
-							{...register("email")}
-						/>
+				{user && (
+					<div className="flex justify-between border-b border-slate-600 p-1">
+						<p>
+							<b>Email:</b> {user.email}
+						</p>
 					</div>
+				)}
 
-					<div className="border-b border-slate-600 p-1">
-						<label className="p-2 pr-5">Nombre:</label>
-						<input
-							type="text"
-							className="border-none"
-							{...register("name", {
-								required: "El nombre es obligatorio",
-							})}
-						/>
-						{errors.name && (
-							<ErrorMessage>{errors.name.message}</ErrorMessage>
-						)}
-					</div>
-
-          <div className="flex justify-between border-b border-slate-600 p-1">
-            <p>Contraseña: <span>******</span></p>
-            <BaseButton label="Cambiar contraseña" variant="secondary"/>
-					</div>
-				</div>
-				<div className="flex justify-end mt-4">
-					<input
-						type="submit"
-						className="bg-indigo-500 text-white text-sm py-1 px-2  rounded-xs justify-end transition duration-300 focus:outline-none hover:bg-indigo-700 mt-4"
-						value="Guardar"
+				<div className="flex justify-between border-b border-slate-600 p-1">
+					<p>
+						Contraseña: <span>******</span>
+					</p>
+					<BaseButton
+						label="Cambiar contraseña"
+						variant="secondary"
 					/>
 				</div>
-			</form>
+			</div>
 		</>
 	);
 }

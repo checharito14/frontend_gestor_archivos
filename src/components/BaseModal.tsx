@@ -17,11 +17,13 @@ import { useAuth } from "@/context/AuthContext";
 export default function BaseModal() {
 	const [isOpen, setIsOpen] = useState(false);
 
-    const user = useAuth()
-    console.log(user.session?.user.id);
+    const {session} = useAuth()
+
+	const path = `/${session?.user.id}`;
+
 	const props = useSupabaseUpload({
 		bucketName: "files",
-		path: `files/${user.session?.user.id}/`,
+		path,
 		allowedMimeTypes: ["image/*"],
 		maxFiles: 1,
 		maxFileSize: 1000 * 1000 * 10, // 10MB,

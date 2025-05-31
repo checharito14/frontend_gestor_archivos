@@ -1,21 +1,21 @@
 import { Clock, Folder, Plus, Trash2 } from "lucide-react";
 import { Link, Navigate, Outlet } from "react-router-dom";
 import SidebarLink from "../components/SidebarLink";
-import { useQuery } from "@tanstack/react-query";
-import { getUser } from "../api/GestorArchivosAPI";
 import NavBar from "../components/NavBar";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AppLayout() {
-	const { data, isError, isLoading } = useQuery({
-		queryFn: getUser,
-		queryKey: ["user"],
-		retry: 1,
-		refetchOnWindowFocus: false,
-	});
+	const user = useAuth();
 
-	if (isLoading) return "Cargando...";
-	if (isError) return <Navigate to="/auth/login" />;
-	if (data)
+	if (user.session === null) {
+		return <Navigate to="/auth/login" />;
+	} else if (user.loading) {
+		return (
+			<div className="flex items-center justify-center min-h-screen">
+				<div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+			</div>
+		);
+	} else {
 		return (
 			<div className="grid grid-cols-[0.5fr_2fr] min-h-screen">
 				<div className="bg-slate-900 rounded-3xl m-2">
@@ -58,4 +58,5 @@ export default function AppLayout() {
 				</div>
 			</div>
 		);
+	}
 }
