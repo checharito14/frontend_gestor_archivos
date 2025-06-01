@@ -4,12 +4,14 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/supabase/client";
 import { Download, Trash2, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+type FileWithUrl = import("@supabase/storage-js").FileObject;
 
 export default function MainPage() {
-	const [files, setFiles] = useState<
-		import("@supabase/storage-js").FileObject[]
-	>([]);
 	const { session } = useAuth();
+
+	const [files, setFiles] = useState<FileWithUrl[]>([]);
 
 	const userPath = `${session?.user.id}/`;
 
@@ -19,6 +21,18 @@ export default function MainPage() {
 			.list(userPath);
 
 		if (!error && data) {
+			// const filesWithUrl = await Promise.all(
+			// 	data.map(async (file) => {
+			// 		const { data: publicUrl } = supabase.storage
+			// 			.from("files")
+			// 			.getPublicUrl(userPath + file.name);
+
+			// 		return {
+			// 			...file,
+			// 			publicUrl: publicUrl.publicUrl,
+			// 		};
+			// 	})
+			// );
 			setFiles(data);
 		}
 	};
@@ -27,30 +41,48 @@ export default function MainPage() {
 		if (session) fetchFiles();
 	}, [session]);
 
-	const handleDelete = async (fileName: string) => {
-		const { error } = await supabase.storage.from("files").remove([userPath + fileName]);
-		if (!error) {
-			setFiles((prev) => prev.filter((f) => f.name !== fileName));
-		} else {
-			alert("Error al eliminar el archivo");
-		}
-	};
+	const handleDowload = async (url: string, filename: string) => {
+		try {
+			const response = await fetch(url);
+			const blob = await response.blob();
+			const blobUrl = URL.createObjectURL(blob);
 
-	const handleDownload = (url: string, name: string) => {
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = name;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
+			const link = document.createElement("a");
+			link.href = blobUrl;
+			link.download = filename;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			URL.revokeObjectURL(blobUrl);
+		} catch (error) {
+			console.error("Error descargando la imagen:", error);
+		}
 	};
 
 	const handleCopy = async (url: string) => {
 		try {
-			await navigator.clipboard.writeText(url);
-			alert("Enlace copiado al portapapeles");
-		} catch {
-			alert("No se pudo copiar el enlace");
+			const response = await fetch(url);
+			const blob = await response.blob();
+
+			const item = new ClipboardItem({ [blob.type]: blob });
+
+			await navigator.clipboard.write([item]);
+
+			toast.info("Imagen copiada al portapapeles")
+		} catch (e) {
+			console.error(e);
+			toast.error("Error al copiar la imagen")
+		}
+	};
+
+	const handleDelete = async (fileName: string) => {
+		const { error } = await supabase.storage
+			.from("files")
+			.remove([userPath + fileName]);
+		if (!error) {
+			setFiles((prev) => prev.filter((f) => f.name !== fileName));
+		} else {
+			alert("Error al eliminar el archivo");
 		}
 	};
 
@@ -85,7 +117,9 @@ export default function MainPage() {
 								alt={file.name}
 								className="w-10 h-10 object-cover rounded"
 							/>
-							<span className="truncate max-w-[150px]">{file.name}</span>
+							<span className="truncate max-w-[150px]">
+								{file.name}
+							</span>
 						</div>
 
 						<span className="text-sm text-gray-600">
@@ -103,16 +137,21 @@ export default function MainPage() {
 						{/* Acciones */}
 						<div className="flex gap-3">
 							<button
-								title="Descargar"
-								onClick={() => handleDownload(publicUrl.publicUrl, file.name)}
-							>
-								<Download className="w-5 h-5 text-blue-600 hover:text-blue-800" />
-							</button>
-							<button
-								title="Copiar enlace"
+								title="Copiar"
 								onClick={() => handleCopy(publicUrl.publicUrl)}
 							>
 								<Copy className="w-5 h-5 text-green-600 hover:text-green-800" />
+							</button>
+							<button
+								title="Descargar"
+								onClick={() =>
+									handleDowload(
+										publicUrl.publicUrl,
+										file.name
+									)
+								}
+							>
+								<Download className="w-5 h-5 text-blue-600 hover:text-blue-800" />
 							</button>
 							<button
 								title="Eliminar"

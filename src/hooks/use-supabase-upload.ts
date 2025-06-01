@@ -174,6 +174,13 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     }
   }, [files.length, setFiles, maxFiles])
 
+  const reset = () => {
+    setFiles([])
+    setErrors([])
+    setSuccesses([])
+    setLoading(false)
+  }
+
   return {
     files,
     setFiles,
@@ -186,6 +193,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     maxFileSize: maxFileSize,
     maxFiles: maxFiles,
     allowedMimeTypes,
+    reset,
     ...dropzoneProps,
   }
 }

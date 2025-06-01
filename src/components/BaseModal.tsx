@@ -4,7 +4,7 @@ import {
 	DialogPanel,
 	DialogTitle,
 } from "@headlessui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	Dropzone,
 	DropzoneContent,
@@ -13,11 +13,12 @@ import {
 import { useSupabaseUpload } from "@/hooks/use-supabase-upload";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/supabase/client";
 
 export default function BaseModal() {
 	const [isOpen, setIsOpen] = useState(false);
 
-    const {session} = useAuth()
+	const { session } = useAuth();
 
 	const path = `/${session?.user.id}`;
 
@@ -26,8 +27,40 @@ export default function BaseModal() {
 		path,
 		allowedMimeTypes: ["image/*"],
 		maxFiles: 1,
-		maxFileSize: 1000 * 1000 * 10, // 10MB,
+		maxFileSize: 1000 * 1000 * 10,
 	});
+
+	useEffect(() => {
+		const insertFile = async () => {
+			if (
+				props.isSuccess &&
+				props.successes.length > 0 &&
+				props.files.length > 0 &&
+				session?.user?.id
+			) {
+				try {
+					await supabase.from("files").insert([
+						{
+							user_id: session.user.id,
+							name: props.files[0].name,
+							path: `${session.user.id}/${props.files[0].name}`,
+							uploaded_at: new Date(),
+						},
+					]);
+
+					setTimeout(() => {
+						setIsOpen(false);
+						props.reset()
+					}, 1000);
+				} catch (error) {
+					console.error("Error inserting file into database:", error);
+				}
+			}
+		};
+
+		insertFile();
+		
+	}, [props.isSuccess, props.files, session?.user?.id]);
 
 	return (
 		<>

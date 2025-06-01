@@ -8,6 +8,7 @@ export default function ProfilePage() {
 	useEffect(() => {
 		const fetchUser = async () => {
 			const { data, error } = await supabase.auth.getUser();
+			console.log(data);
 			if (!error && data?.user) {
 				setUser(data.user);
 			}

@@ -88,6 +88,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
         <p className="text-primary text-sm">
          Subido correctamente{files.length} file{files.length > 1 ? 's' : ''}
         </p>
+
       </div>
     )
   }
@@ -213,6 +214,8 @@ const DropzoneEmptyState = ({ className }: { className?: string }) => {
     </div>
   )
 }
+
+
 
 const useDropzoneContext = () => {
   const context = useContext(DropzoneContext)
