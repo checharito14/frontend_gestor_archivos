@@ -1,59 +1,27 @@
 import BaseModal from "@/components/BaseModal";
 import { formatBytes } from "@/components/dropzone";
 import { useAuth } from "@/context/AuthContext";
+import { useFiles } from "@/hooks/use-files";
 import { supabase } from "@/supabase/client";
+import { formatDate } from "@/utils";
+import { copyToClipboard, dowloadFile } from "@/utils/filesActions";
 import { Download, Trash2, Copy } from "lucide-react";
-import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-type FileWithUrl = import("@supabase/storage-js").FileObject;
+// type FileWithUrl = import("@supabase/storage-js").FileObject;
 
 export default function MainPage() {
 	const { session } = useAuth();
 
-	const [files, setFiles] = useState<FileWithUrl[]>([]);
-
+	const userId = session?.user.id;
 	const userPath = `${session?.user.id}/`;
 
-	const fetchFiles = async () => {
-		const { data, error } = await supabase.storage
-			.from("files")
-			.list(userPath);
-
-		if (!error && data) {
-			// const filesWithUrl = await Promise.all(
-			// 	data.map(async (file) => {
-			// 		const { data: publicUrl } = supabase.storage
-			// 			.from("files")
-			// 			.getPublicUrl(userPath + file.name);
-
-			// 		return {
-			// 			...file,
-			// 			publicUrl: publicUrl.publicUrl,
-			// 		};
-			// 	})
-			// );
-			setFiles(data);
-		}
-	};
-
-	useEffect(() => {
-		if (session) fetchFiles();
-	}, [session]);
+	const {files, deleteFile} = useFiles(userId);
+	
 
 	const handleDowload = async (url: string, filename: string) => {
 		try {
-			const response = await fetch(url);
-			const blob = await response.blob();
-			const blobUrl = URL.createObjectURL(blob);
-
-			const link = document.createElement("a");
-			link.href = blobUrl;
-			link.download = filename;
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-			URL.revokeObjectURL(blobUrl);
+			await dowloadFile(url, filename);
 		} catch (error) {
 			console.error("Error descargando la imagen:", error);
 		}
@@ -61,28 +29,21 @@ export default function MainPage() {
 
 	const handleCopy = async (url: string) => {
 		try {
-			const response = await fetch(url);
-			const blob = await response.blob();
-
-			const item = new ClipboardItem({ [blob.type]: blob });
-
-			await navigator.clipboard.write([item]);
-
-			toast.info("Imagen copiada al portapapeles")
+			await copyToClipboard(url);
+			toast.info("Imagen copiada al portapapeles");
 		} catch (e) {
 			console.error(e);
-			toast.error("Error al copiar la imagen")
+			toast.error("Error al copiar la imagen");
 		}
 	};
 
 	const handleDelete = async (fileName: string) => {
-		const { error } = await supabase.storage
-			.from("files")
-			.remove([userPath + fileName]);
-		if (!error) {
-			setFiles((prev) => prev.filter((f) => f.name !== fileName));
-		} else {
-			alert("Error al eliminar el archivo");
+		try {
+			await deleteFile(fileName);
+			toast.success("Archivo eliminado correctamente");
+		} catch (error) {
+			toast.error("Error al eliminar el archivo");
+			console.error("Error al eliminar el archivo:", error);
 		}
 	};
 
@@ -92,7 +53,7 @@ export default function MainPage() {
 				<h1 className="text-2xl">Todos los archivos</h1>
 				{<BaseModal />}
 			</div>
-			{/* Encabezado */}
+
 			<div className="grid grid-cols-4 gap-4 p-2 text-xs font-semibold text-gray-500 border-b">
 				<span>Nombre</span>
 				<span>Última actualización</span>
@@ -100,11 +61,11 @@ export default function MainPage() {
 				<span>Acciones</span>
 			</div>
 
-			{/* Lista */}
 			{files.map((file) => {
 				const { data: publicUrl } = supabase.storage
 					.from("files")
 					.getPublicUrl(userPath + file.name);
+				console.log(file);
 
 				return (
 					<div
@@ -123,18 +84,13 @@ export default function MainPage() {
 						</div>
 
 						<span className="text-sm text-gray-600">
-							{file.updated_at
-								? new Date(file.updated_at).toLocaleString()
-								: "-"}
+							{formatDate(file.created_at)}
 						</span>
 
 						<span className="text-sm text-gray-600">
-							{file.metadata?.size
-								? formatBytes(file.metadata.size)
-								: "-"}
+							{file.size ? formatBytes(file.size) : "-"}
 						</span>
 
-						{/* Acciones */}
 						<div className="flex gap-3">
 							<button
 								title="Copiar"

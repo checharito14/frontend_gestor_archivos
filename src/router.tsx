@@ -6,6 +6,7 @@ import MainPage from "./pages/MainPage";
 import AppLayout from "./layout/AppLayout";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import TrashPage from "./pages/TrashPage";
 // import AppLayout from "./layout/AppLayout";
 
 export default function Router() {
@@ -30,7 +31,7 @@ export default function Router() {
 					<Route index element={<MainPage />} />
 					<Route path="profile" element={<ProfilePage />} />
 					<Route path="recent" element={<ProfilePage />} />
-					<Route path="trash" element={<ProfilePage />} />
+					<Route path="trash" element={<TrashPage />} />
 				</Route>
 			</Routes>
 		</HashRouter>

@@ -39,19 +39,26 @@ export default function BaseModal() {
 				session?.user?.id
 			) {
 				try {
-					await supabase.from("files").insert([
+					const file = props.files[0]; 
+					const upload = await supabase.from("files").insert([
 						{
 							user_id: session.user.id,
-							name: props.files[0].name,
-							path: `${session.user.id}/${props.files[0].name}`,
-							uploaded_at: new Date(),
+							name: file.name,
+							path: `${session.user.id}/${file.name}`,
+							size: file.size,
+							mime_type: file.type,
+							is_deleted: false,
 						},
 					]);
 
-					setTimeout(() => {
-						setIsOpen(false);
-						props.reset()
-					}, 1000);
+					if (upload.error) {
+						throw upload.error;
+					} else {
+						setTimeout(() => {
+							setIsOpen(false);
+							props.reset();
+						}, 1000);
+					}
 				} catch (error) {
 					console.error("Error inserting file into database:", error);
 				}
@@ -59,14 +66,13 @@ export default function BaseModal() {
 		};
 
 		insertFile();
-		
 	}, [props.isSuccess, props.files, session?.user?.id]);
 
 	return (
 		<>
 			<button
 				onClick={() => setIsOpen(true)}
-				className="flex items-center gap-2 border-1 border-slate-200 p-2 rounded-lg mt-5 cursor-pointer transition duration-100"
+				className="flex items-center gap-2 border-1 border-slate-200 p-2 rounded-lg mt-5 cursor-pointer transition duration-100 hover:bg-slate-50"
 			>
 				Agregar <Plus className="size-5" />
 			</button>
