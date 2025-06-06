@@ -2,13 +2,15 @@
 import { useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { LogOutIcon, Search, PencilIcon } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function NavBar() {
 	// const [menuOpen, setMenuOpen] = useState(false);
 	const navigate = useNavigate();
+	const {logout} = useAuth()
 
-	const handleLogout = () => {
-		localStorage.removeItem("token");
+	const handleLogout = async () => {
+		await logout()
 		navigate("/auth/login");
 	};
 

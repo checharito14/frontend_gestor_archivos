@@ -14,11 +14,13 @@ import { useSupabaseUpload } from "@/hooks/use-supabase-upload";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/supabase/client";
+import { useParams } from "react-router-dom";
 
-export default function BaseModal() {
+export default function BaseModal({onUploadSuccess} : {onUploadSuccess?: () => void}) {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const { session } = useAuth();
+	const {folderId} = useParams();
 
 	const path = `/${session?.user.id}`;
 
@@ -48,17 +50,20 @@ export default function BaseModal() {
 							size: file.size,
 							mime_type: file.type,
 							is_deleted: false,
+							folder_id: folderId || null,
 						},
 					]);
 
 					if (upload.error) {
 						throw upload.error;
 					} else {
+						onUploadSuccess?.()
 						setTimeout(() => {
 							setIsOpen(false);
 							props.reset();
 						}, 1000);
 					}
+
 				} catch (error) {
 					console.error("Error inserting file into database:", error);
 				}
@@ -85,7 +90,7 @@ export default function BaseModal() {
 				<DialogBackdrop className="fixed inset-0 bg-black/30" />
 				<div className="fixed inset-0 flex w-screen items-center justify-center p-4">
 					<DialogPanel className="max-w-[1000px] space-y-4 rounded-md bg-white p-12">
-						<DialogTitle className="">Agregar archivos</DialogTitle>
+						<DialogTitle className="font-bold">Agregar archivos</DialogTitle>
 
 						<Dropzone {...props}>
 							<DropzoneEmptyState />

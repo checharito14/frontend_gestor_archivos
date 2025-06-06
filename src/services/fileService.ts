@@ -1,12 +1,20 @@
 import { supabase } from "@/supabase/client";
 
-export const getUserFiles = async (userId: string) => {
-    return await supabase
-		.from("files")
-		.select("*")
-		.eq("user_id", userId)
-		.eq("is_deleted", false);
-}
+export const getUserFiles = async (userId: string, folderId: string | null = null) => {
+    let query = supabase
+        .from("files")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("is_deleted", false);
+
+    if (folderId) {
+        query = query.eq("folder_id", folderId);
+    } else {
+        query = query.is("folder_id", null);
+    }
+
+    return await query;
+};
 
 export const getDeletedFiles = async (userId: string) => {
     return await supabase
@@ -34,7 +42,7 @@ export const hardDelete = async(fileName: string) => {
                 .eq("name", fileName);
 }
 
-export const restoreFile = async(fileName: string) => {
+export const restoreFileAction = async(fileName: string) => {
     return await supabase
                 .from("files")
                 .update({
@@ -43,5 +51,7 @@ export const restoreFile = async(fileName: string) => {
                 })
                 .eq("name", fileName);
 }
+
+
 
 

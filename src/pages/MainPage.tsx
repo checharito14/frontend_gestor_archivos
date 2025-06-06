@@ -6,18 +6,22 @@ import { supabase } from "@/supabase/client";
 import { formatDate } from "@/utils";
 import { copyToClipboard, dowloadFile } from "@/utils/filesActions";
 import { Download, Trash2, Copy } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // type FileWithUrl = import("@supabase/storage-js").FileObject;
 
 export default function MainPage() {
 	const { session } = useAuth();
+	const { folderId } = useParams();
 
 	const userId = session?.user.id;
-	const userPath = `${session?.user.id}/`;
+	const userPath = `${userId}/`;
 
-	const {files, deleteFile} = useFiles(userId);
-	
+	const { files, deleteFile, fetchFiles } = useFiles(userId, folderId);
+
+	const [folderName, setFolderName] = useState(null);
 
 	const handleDowload = async (url: string, filename: string) => {
 		try {
@@ -40,18 +44,43 @@ export default function MainPage() {
 	const handleDelete = async (fileName: string) => {
 		try {
 			await deleteFile(fileName);
-			toast.success("Archivo eliminado correctamente");
+			toast.success("Archivo mandado a la papelera");
 		} catch (error) {
 			toast.error("Error al eliminar el archivo");
 			console.error("Error al eliminar el archivo:", error);
 		}
 	};
 
+	useEffect(() => {
+		const fetchFolderName = async () => {
+			if (folderId) {
+				const { data, error } = await supabase
+					.from("folders")
+					.select("name")
+					.eq("id", folderId)
+					.single();
+				if (!error && data) {
+					setFolderName(data.name);
+				} else {
+					setFolderName(null);
+				}
+			} else {
+				setFolderName(null);
+			}
+		};
+		fetchFolderName();
+	}, [folderId]);
+
 	return (
 		<div className="p-3 flex flex-col max-w-[90%] mx-auto">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl">Todos los archivos</h1>
-				{<BaseModal />}
+				<h1 className="text-2xl">
+					{" "}
+					{folderId && folderName
+						? `${folderName}`
+						: "Todos los archivos"}
+				</h1>
+				{<BaseModal onUploadSuccess={fetchFiles} />}
 			</div>
 
 			<div className="grid grid-cols-4 gap-4 p-2 text-xs font-semibold text-gray-500 border-b">
@@ -65,7 +94,6 @@ export default function MainPage() {
 				const { data: publicUrl } = supabase.storage
 					.from("files")
 					.getPublicUrl(userPath + file.name);
-				console.log(file);
 
 				return (
 					<div
@@ -88,7 +116,7 @@ export default function MainPage() {
 						</span>
 
 						<span className="text-sm text-gray-600">
-							{file.size ? formatBytes(file.size) : "-"}
+							{formatBytes(file.size)}
 						</span>
 
 						<div className="flex gap-3">

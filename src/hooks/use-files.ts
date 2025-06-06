@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { FileRow } from "@/types";
-import { getDeletedFiles, getUserFiles, hardDelete, softDelete } from "@/services/fileService";
+import { getDeletedFiles, getUserFiles, hardDelete, restoreFileAction, softDelete } from "@/services/fileService";
 
-export function useFiles(userId?: string) {
+export function useFiles(userId?: string, folderId : string | null = null) {
 	const [files, setFiles] = useState<FileRow[]>([]);
 	const [deletedFiles, setDeletedFiles] = useState<FileRow[]>([]);
 
 	const fetchFiles = async () => {
 		if (!userId) return;
-		const { data, error } = await getUserFiles(userId);
+		const { data, error } = await getUserFiles(userId, folderId);
 		if (!error && data) setFiles(data);
 	};
 
@@ -32,10 +32,16 @@ export function useFiles(userId?: string) {
 		return error;
 	}
 
+	const restoreFile = async(fileName: string) => {
+		const { error } = await restoreFileAction(fileName);
+		if (!error) fetchDeletedFiles();
+		return error;
+	}
+
 	useEffect(() => {
 		if (userId) fetchFiles();
 		if(userId) fetchDeletedFiles()
-	}, [userId]);
+	}, [userId, folderId]);
 
-	return { deletedFiles,files, fetchFiles, deleteFile, fetchDeletedFiles, deleteFilePermanently };
+	return { deletedFiles,files, fetchFiles, deleteFile, fetchDeletedFiles, deleteFilePermanently, restoreFile };
 }

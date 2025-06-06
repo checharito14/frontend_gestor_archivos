@@ -4,13 +4,30 @@ import SidebarLink from "../components/SidebarLink";
 import NavBar from "../components/NavBar";
 import { useAuth } from "@/context/AuthContext";
 import { Slide, ToastContainer } from "react-toastify";
+import { useFolders } from "@/hooks/use-folders";
+import { useState } from "react";
+import CreateFolderModal from "@/components/CreateFolderModal";
+import ContextualMenu, { useFolderContextMenu } from "@/components/ContextualMenu";
 
 export default function AppLayout() {
-	const user = useAuth();
+	const { session, loading } = useAuth();
+	const userId = session?.user.id;
 
-	if (user.session === null) {
+	const { folders, fetchFolders } = useFolders(userId);
+	const [showCreateFolder, setShowCreateFolder] = useState(false);
+	const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+
+	const showMenu = useFolderContextMenu();
+
+	const handleContextMenu = (event: React.MouseEvent, folderId: string) => {
+		event.preventDefault();
+		setSelectedFolderId(folderId);
+		showMenu({ event });
+	};
+
+	if (session === null) {
 		return <Navigate to="/auth/login" />;
-	} else if (user.loading) {
+	} else if (loading) {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
 				<div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
@@ -47,11 +64,34 @@ export default function AppLayout() {
 
 						<div className="flex justify-between px-8 items-center mt-4 text-white">
 							<h3 className="text-lg">Carpetas</h3>
-							<Plus className="cursor-pointer hover:text-slate-700" />
+							<button></button>
+							<Plus
+								onClick={() => setShowCreateFolder(true)}
+								className="cursor-pointer hover:text-slate-700"
+							/>
 						</div>
-						<p className="mt-12 text-center text-xs text-slate-500">
-							No hay ninguna carpeta
-						</p>
+						{folders.length === 0 ? (
+							<p className="mt-12 text-center text-xs text-slate-500">
+								No hay ninguna carpeta
+							</p>
+						) : (
+							<ul className="flex flex-col gap-2 mt-4">
+								{folders.map((folder) => (
+									<div
+										key={folder.id}
+										onContextMenu={(e) =>
+											handleContextMenu(e, folder.id)
+										}
+									>
+										<SidebarLink
+											to={`/files/folder/${folder.id}`}
+											icon={Folder}
+											label={folder.name}
+										/>
+									</div>
+								))}
+							</ul>
+						)}
 					</div>
 
 					<div>
@@ -59,6 +99,16 @@ export default function AppLayout() {
 						<Outlet />
 					</div>
 				</div>
+				<CreateFolderModal
+					open={showCreateFolder}
+					onClose={() => setShowCreateFolder(false)}
+					onFolderCreated={fetchFolders}
+					userId={userId}
+				/>
+				<ContextualMenu
+					onRename={() => console.log("rename")}
+					onDelete={() => console.log("delete")}
+				/>
 				<ToastContainer
 					position="top-center"
 					autoClose={1000}

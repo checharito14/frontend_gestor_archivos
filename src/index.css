@@ -67,6 +67,7 @@ body {
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+    
 }
 
 :root {
@@ -102,6 +103,15 @@ body {
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+    --contexify-menu-bgColor: #fff;
+    --contexify-separator-color: rgba(0,0,0,.2);
+    --contexify-item-color: #333;
+    --contexify-activeItem-color: #000;
+    --contexify-activeItem-bgColor: #f8fafc;
+    --contexify-rightSlot-color: #6f6e77;
+    --contexify-activeRightSlot-color: #fff;
+    --contexify-arrow-color: #6f6e77;
+    --contexify-activeArrow-color: #fff;
 }
 
 .dark {

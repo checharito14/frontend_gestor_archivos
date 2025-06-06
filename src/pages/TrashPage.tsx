@@ -11,7 +11,7 @@ export default function TrashPage() {
 
 	const userId = session?.user.id;
 
-	const { deletedFiles, deleteFilePermanently } = useFiles(userId);
+	const { deletedFiles, deleteFilePermanently, restoreFile } = useFiles(userId);
 
 	const handleDelete = async (fileName: string) => {
 		try {
@@ -22,6 +22,16 @@ export default function TrashPage() {
 			toast.error("Error al eliminar el archivo");
 		}
 	};
+
+	const handleRestore = async (fileName: string) => {
+		try {
+			await restoreFile(fileName);
+			toast.success("Archivo restaurado correctamente");
+		} catch (e) {
+			console.error(e);
+			toast.error("Error al restaurar el archivo");
+		}
+	}
 
 	return (
 		<>
@@ -40,7 +50,7 @@ export default function TrashPage() {
 
 				<div className="grid grid-cols-4 gap-4 p-2 text-xs font-semibold text-gray-500 border-b">
 					<span>Nombre</span>
-					<span>Última actualización</span>
+					<span>Fecha de eliminado</span>
 					<span>Detalles</span>
 					<span>Acciones</span>
 				</div>
@@ -75,7 +85,7 @@ export default function TrashPage() {
 							</span>
 
 							<div className="flex gap-3">
-								<button title="Recuperar">
+								<button title="Recuperar" onClick={() => handleRestore(file.name)}>
 									<ArchiveRestore className="w-5 h-5 text-blue-600 hover:text-blue-800" />
 								</button>
 								<button
