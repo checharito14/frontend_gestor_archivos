@@ -36,7 +36,7 @@ export default function TrashPage() {
 	return (
 		<>
 			<div className="p-3 flex flex-col max-w-[90%] mx-auto">
-				<div className="flex items-center justify-between">
+				<div className="flex items-center justify-between mb-2">
 					<h1 className="text-2xl">Papelera</h1>
 					<div className="flex items-center gap-2">
 						<button className="flex items-center gap-2 border-1 border-slate-200 p-2 rounded-lg mt-5 cursor-pointer transition duration-100 hover:bg-slate-50">
@@ -55,7 +55,12 @@ export default function TrashPage() {
 					<span>Acciones</span>
 				</div>
 
-				{deletedFiles.map((file) => {
+				{deletedFiles.length === 0 ? (
+					<p className="text-center text-gray-500 mt-15">
+						No hay archivos en la papelera
+					</p>
+				) :
+				deletedFiles.map((file) => {
 					const { data: publicUrl } = supabase.storage
 						.from("files")
 						.getPublicUrl(`${userId}/${file.name}`);

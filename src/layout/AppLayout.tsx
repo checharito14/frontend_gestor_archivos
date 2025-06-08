@@ -6,16 +6,25 @@ import { useAuth } from "@/context/AuthContext";
 import { Slide, ToastContainer } from "react-toastify";
 import { useFolders } from "@/hooks/use-folders";
 import { useState } from "react";
-import CreateFolderModal from "@/components/CreateFolderModal";
-import ContextualMenu, { useFolderContextMenu } from "@/components/ContextualMenu";
+import CreateFolderModal from "@/components/folders/CreateFolderModal";
+import { useFolderContextMenu } from "@/components/folders/FoldersContextualMenu";
+import RenameFolderModal from "@/components/folders/RenameFolderModal";
+import DeleteFolderModal from "@/components/folders/DeleteFolderModal";
+import FoldersContextualMenu from "@/components/folders/FoldersContextualMenu";
 
 export default function AppLayout() {
 	const { session, loading } = useAuth();
 	const userId = session?.user.id;
 
-	const { folders, fetchFolders } = useFolders(userId);
+	const { folders, fetchFolders } = useFolders(userId);	
+
 	const [showCreateFolder, setShowCreateFolder] = useState(false);
 	const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+
+	const [showRenameModal, setShowRenameModal] = useState(false);
+	const [renameFolderName, setRenameFolderName] = useState<string>("");
+
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
 	const showMenu = useFolderContextMenu();
 
@@ -24,6 +33,19 @@ export default function AppLayout() {
 		setSelectedFolderId(folderId);
 		showMenu({ event });
 	};
+
+	const handleRename = () => {
+		const folder = folders.find((f) => f.id === selectedFolderId);
+		setSelectedFolderId(selectedFolderId);
+		setRenameFolderName(folder?.name || "");
+		setShowRenameModal(true);
+	};
+
+	const handleDeleteFolder = () => {
+		setSelectedFolderId(selectedFolderId);
+		setShowDeleteModal(true);
+	}
+
 
 	if (session === null) {
 		return <Navigate to="/auth/login" />;
@@ -105,10 +127,30 @@ export default function AppLayout() {
 					onFolderCreated={fetchFolders}
 					userId={userId}
 				/>
-				<ContextualMenu
-					onRename={() => console.log("rename")}
-					onDelete={() => console.log("delete")}
+
+
+				<FoldersContextualMenu
+					onRename={handleRename}
+					onDelete={handleDeleteFolder}
 				/>
+
+
+				<RenameFolderModal
+					open={showRenameModal}
+					onClose={() => setShowRenameModal(false)}
+					folderId={selectedFolderId}
+					initialName={renameFolderName}
+					onRenamed={fetchFolders}
+				/>
+
+				<DeleteFolderModal
+					open={showDeleteModal}
+					onClose={() => setShowDeleteModal(false)}
+					folderId={selectedFolderId}
+					onDeleted={fetchFolders}
+				/>
+
+
 				<ToastContainer
 					position="top-center"
 					autoClose={1000}

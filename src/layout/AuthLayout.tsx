@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 
 export default function AuthLayout() {
+	
 	return (
 		<>
 			<div className="grid grid-cols-[1.5fr_2fr] min-h-screen">

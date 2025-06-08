@@ -9,9 +9,7 @@ export const getUserFiles = async (userId: string, folderId: string | null = nul
 
     if (folderId) {
         query = query.eq("folder_id", folderId);
-    } else {
-        query = query.is("folder_id", null);
-    }
+    } 
 
     return await query;
 };
@@ -52,6 +50,12 @@ export const restoreFileAction = async(fileName: string) => {
                 .eq("name", fileName);
 }
 
+export async function moveFileToFolder(fileId: string, folderId: string) {
+    return await supabase
+        .from("files")
+        .update({ folder_id: folderId })
+        .eq("id", fileId);
+}
 
 
 

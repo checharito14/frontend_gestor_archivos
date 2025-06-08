@@ -49,7 +49,7 @@ export default function CreateFolderModal({
 			>
 				<DialogBackdrop className="fixed inset-0 bg-black/30" />
 				<div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-					<DialogPanel className="max-w-[1000px] space-y-4 rounded-md bg-white p-6">
+					<DialogPanel className="w-[400px] space-y-4 rounded-md bg-white p-6">
 						<DialogTitle className="font-bold flex justify-between items-center mb-5">
 							Crear carpeta
 							<X

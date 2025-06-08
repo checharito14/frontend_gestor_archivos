@@ -30,6 +30,7 @@
     "framer-motion": "^12.6.2",
     "keytar": "^7.9.0",
     "lucide-react": "^0.486.0",
+    "nprogress": "^0.2.0",
     "react": "^19.0.0",
     "react-contexify": "^6.0.0",
     "react-dom": "^19.0.0",

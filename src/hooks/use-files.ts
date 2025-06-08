@@ -1,47 +1,92 @@
-// src/hooks/useFiles.ts
-
 import { useState, useEffect } from "react";
+import NProgress from "nprogress";
 import { FileRow } from "@/types";
-import { getDeletedFiles, getUserFiles, hardDelete, restoreFileAction, softDelete } from "@/services/fileService";
+import {
+	getDeletedFiles,
+	getUserFiles,
+	hardDelete,
+	moveFileToFolder,
+	restoreFileAction,
+	softDelete,
+} from "@/services/fileService";
 
-export function useFiles(userId?: string, folderId : string | null = null) {
+export function useFiles(userId?: string, folderId: string | null = null) {
 	const [files, setFiles] = useState<FileRow[]>([]);
 	const [deletedFiles, setDeletedFiles] = useState<FileRow[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const fetchFiles = async () => {
 		if (!userId) return;
-		const { data, error } = await getUserFiles(userId, folderId);
-		if (!error && data) setFiles(data);
+		setIsLoading(true);
+		NProgress.start();
+		try {
+			const { data, error } = await getUserFiles(userId, folderId);
+			if (!error && data) setFiles(data);
+		} finally {
+			setIsLoading(false);
+			NProgress.done();
+		}
 	};
 
 	const fetchDeletedFiles = async () => {
 		if (!userId) return;
-		const { data, error } = await getDeletedFiles(userId);
-		if (!error && data) setDeletedFiles(data);
-	}
+		setIsLoading(true);
+		NProgress.start();
+		try {
+			const { data, error } = await getDeletedFiles(userId);
+			if (!error && data) setDeletedFiles(data);
+		} finally {
+			setIsLoading(false);
+			NProgress.done();
+		}
+	};
 
 	const deleteFile = async (fileName: string) => {
+		NProgress.start();
 		const { error } = await softDelete(fileName);
-		if (!error) fetchFiles();
+		if (!error) await fetchFiles();
+		NProgress.done();
 		return error;
 	};
 
 	const deleteFilePermanently = async (fileName: string) => {
+		NProgress.start();
 		const { error } = await hardDelete(fileName);
-		if (!error) fetchDeletedFiles();
+		if (!error) await fetchDeletedFiles();
+		NProgress.done();
 		return error;
-	}
+	};
 
-	const restoreFile = async(fileName: string) => {
+	const restoreFile = async (fileName: string) => {
+		NProgress.start();
 		const { error } = await restoreFileAction(fileName);
-		if (!error) fetchDeletedFiles();
+		if (!error) await fetchDeletedFiles();
+		NProgress.done();
 		return error;
-	}
+	};
+
+	const moveFile = async (fileId: string, folderId: string) => {
+		NProgress.start();
+		const { error } = await moveFileToFolder(fileId, folderId);
+		if (!error) await fetchFiles();
+		NProgress.done();
+		return error;
+	};
 
 	useEffect(() => {
 		if (userId) fetchFiles();
-		if(userId) fetchDeletedFiles()
+		if (userId) fetchDeletedFiles();
 	}, [userId, folderId]);
 
-	return { deletedFiles,files, fetchFiles, deleteFile, fetchDeletedFiles, deleteFilePermanently, restoreFile };
+	return {
+		deletedFiles,
+		files,
+		fetchFiles,
+		deleteFile,
+		fetchDeletedFiles,
+		deleteFilePermanently,
+		restoreFile,
+		isLoading,
+        moveFile
+	};
 }

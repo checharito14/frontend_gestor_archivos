@@ -6,11 +6,11 @@ const MENU_ID = "folder_context_menu";
 
 export function useFolderContextMenu() {
 	const { show } = useContextMenu({ id: MENU_ID });
-
+    
 	return show;
 }
 
-export default function ContextualMenu({
+export default function FoldersContextualMenu({
 	onRename,
 	onDelete,
 }: {
