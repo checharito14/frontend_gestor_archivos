@@ -1,7 +1,6 @@
-import { Clock, Folder, Plus, Trash2 } from "lucide-react";
-import { Link, Navigate, Outlet } from "react-router-dom";
+import { Folder, FolderClosed, Plus, Trash2 } from "lucide-react";
+import {Link, Navigate, Outlet } from "react-router-dom";
 import SidebarLink from "../components/SidebarLink";
-import NavBar from "../components/NavBar";
 import { useAuth } from "@/context/AuthContext";
 import { Slide, ToastContainer } from "react-toastify";
 import { useFolders } from "@/hooks/use-folders";
@@ -58,11 +57,11 @@ export default function AppLayout() {
 	} else {
 		return (
 			<>
-				<div className="grid grid-cols-[0.5fr_2fr] min-h-screen">
-					<div className="bg-slate-900 rounded-3xl m-2">
+				<div className="grid grid-cols-[0.5fr_2fr] h-screen overflow-hidden">
+					<div className="bg-slate-900 pb-4 h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
 						<div className="w-32 h-32 mx-auto">
 							<Link to={"/files/"}>
-								<img src="/logo.svg" alt="Logo" />
+								<img src="logo.svg" alt="Logo" />
 							</Link>
 						</div>
 
@@ -73,11 +72,6 @@ export default function AppLayout() {
 								label={"Mis archivos"}
 							/>
 							<SidebarLink
-								to={"/files/recent"}
-								icon={Clock}
-								label={"Recientes"}
-							/>
-							<SidebarLink
 								to={"/files/trash"}
 								icon={Trash2}
 								label={"Papelera"}
@@ -85,11 +79,10 @@ export default function AppLayout() {
 						</nav>
 
 						<div className="flex justify-between px-8 items-center mt-4 text-white">
-							<h3 className="text-lg">Carpetas</h3>
-							<button></button>
+							<h3 className="text-lg ">Carpetas</h3>
 							<Plus
 								onClick={() => setShowCreateFolder(true)}
-								className="cursor-pointer hover:text-slate-700"
+								className="cursor-pointer hover:text-slate-50"
 							/>
 						</div>
 						{folders.length === 0 ? (
@@ -107,7 +100,7 @@ export default function AppLayout() {
 									>
 										<SidebarLink
 											to={`/files/folder/${folder.id}`}
-											icon={Folder}
+											icon={FolderClosed}
 											label={folder.name}
 										/>
 									</div>
@@ -116,9 +109,10 @@ export default function AppLayout() {
 						)}
 					</div>
 
-					<div>
-						<NavBar />
-						<Outlet />
+					<div className="h-screen flex flex-col">
+						<div className="flex-1 min-h-0">
+							<Outlet />
+						</div>
 					</div>
 				</div>
 				<CreateFolderModal

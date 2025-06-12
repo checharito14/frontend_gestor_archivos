@@ -29,7 +29,7 @@ export default function RegisterForm() {
 	const handleRegister = async (formData: RegisterFormType) => {
 		setIsLoading(true);
 		try {
-			await createAccount(formData.email, formData.password);
+			await createAccount(formData.email, formData.password, formData.name);
 			toast.success("Registro exitoso");
 			reset();
 			navigate("/auth/login");

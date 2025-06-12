@@ -1,11 +1,9 @@
 import { Folder } from "@/types";
-import { Plus } from "lucide-react";
 import {
 	Menu,
 	Item,
 	Submenu,
 	useContextMenu,
-	Separator,
 } from "react-contexify";
 import "react-contexify/ReactContexify.css";
 import { moveFileToFolder } from "@/services/fileService";
@@ -53,10 +51,6 @@ export default function FilesContextualMenu({
 					</Item>
 				))}
 			</Submenu>
-			<Separator />
-			<Item onClick={() => {/* lógica para crear nueva carpeta */}}>
-				<Plus size={15} className="mr-1" /> Nueva carpeta
-			</Item>
 		</Menu>
 	);
 }

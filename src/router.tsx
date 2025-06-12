@@ -30,7 +30,6 @@ export default function Router() {
 				>
 					<Route index element={<MainPage />} />
 					<Route path="profile" element={<ProfilePage />} />
-					<Route path="recent" element={<ProfilePage />} />
 					<Route path="trash" element={<TrashPage />} />
 					<Route path="folder/:folderId" element={<MainPage />} />
 				</Route>

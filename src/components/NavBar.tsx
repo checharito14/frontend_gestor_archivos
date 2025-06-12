@@ -4,7 +4,12 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { LogOutIcon, Search, PencilIcon } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
-export default function NavBar() {
+interface NavBarProps {
+	searchTerm: string;
+	setSearchTerm: (term: string) => void;
+}
+
+export default function NavBar({ searchTerm, setSearchTerm }: NavBarProps) {
 	// const [menuOpen, setMenuOpen] = useState(false);
 	const navigate = useNavigate();
 	const {logout} = useAuth()
@@ -17,14 +22,16 @@ export default function NavBar() {
 	return (
 		<nav className="flex items-center justify-between px-6 py-4">
 			<div className="flex items-center max-w-80">
-				<label>
+				<label className="relative w-full">
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
 					<input
 						type="text"
 						id="search"
-						placeholder="Buscar archivos y carpetas"
+						placeholder="Buscar archivos..."
+						value={searchTerm}
+						onChange={e => setSearchTerm(e.target.value)}
 						className="pl-10 pr-4 py-2 rounded-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
 					/>
-					<Search className="absolute left-3 text-gray-400" />
 				</label>
 			</div>
 
@@ -32,7 +39,7 @@ export default function NavBar() {
 				<Menu>
 					<MenuButton className="shadow-lg rounded-full">
 						<img
-							src="/user_default.jpg"
+							src="user_default.jpg"
 							alt="Perfil"
 							className="w-10 h-10 rounded-full cursor-pointer"
 						/>

@@ -33,11 +33,23 @@ export const softDelete = async(fileName: string) => {
                 .eq("name", fileName);
 }
 
-export const hardDelete = async(fileName: string) => {
-    return await supabase
-                .from("files")
-                .delete()
-                .eq("name", fileName);
+export const hardDelete = async (fileName: string, userId: string) => {
+    // 1. Elimina el archivo del storage
+    const { error: storageError } = await supabase
+        .storage
+        .from("files")
+        .remove([`${userId}/${fileName}`]);
+
+    // 2. Si no hubo error, elimina el registro de la base de datos
+    if (!storageError) {
+        return await supabase
+            .from("files")
+            .delete()
+            .eq("name", fileName)
+            .eq("user_id", userId);
+    } else {
+        throw storageError;
+    }
 }
 
 export const restoreFileAction = async(fileName: string) => {
@@ -57,5 +69,10 @@ export async function moveFileToFolder(fileId: string, folderId: string) {
         .eq("id", fileId);
 }
 
-
+export async function markFileAsRecent(fileId: string) {
+  return await supabase
+    .from("files")
+    .update({ last_accessed_at: new Date().toISOString() })
+    .eq("id", fileId);
+}
 

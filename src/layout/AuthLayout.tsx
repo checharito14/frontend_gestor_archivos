@@ -9,7 +9,7 @@ export default function AuthLayout() {
 				<div className="bg-slate-900 flex justify-center bg-logo bg-right-top rounded-3xl m-2">
 					<div className="w-96 py-28">
 						<img
-							src="/logo.svg"
+							src="logo.svg"
 							alt="Logo DocVault"
 							className="w-full"
 						/>

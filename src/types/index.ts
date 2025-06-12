@@ -13,6 +13,7 @@ export type FileRow = {
 	is_deleted: boolean;
 	created_at: string;
 	deleted_at?: string | null;
+	last_accessed_at?: string | null;
 };
 
 export type Folder = {

@@ -49,9 +49,9 @@ export function useFiles(userId?: string, folderId: string | null = null) {
 		return error;
 	};
 
-	const deleteFilePermanently = async (fileName: string) => {
+	const deleteFilePermanently = async (fileName: string, userId: string) => {
 		NProgress.start();
-		const { error } = await hardDelete(fileName);
+		const { error } = await hardDelete(fileName, userId);
 		if (!error) await fetchDeletedFiles();
 		NProgress.done();
 		return error;
@@ -72,6 +72,7 @@ export function useFiles(userId?: string, folderId: string | null = null) {
 		NProgress.done();
 		return error;
 	};
+
 
 	useEffect(() => {
 		if (userId) fetchFiles();

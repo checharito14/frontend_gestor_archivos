@@ -7,7 +7,6 @@ import { AuthProvider } from "./context/AuthContext";
 import "nprogress/nprogress.css";
 const queryClient = new QueryClient();
 
-
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
